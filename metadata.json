@@ -1,0 +1,7 @@
+{
+  "name": "Tennis Tactics Pro",
+  "description": "A professional-grade tennis tactical analysis tool with video tagging, scoring logic, and performance metrics export.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
