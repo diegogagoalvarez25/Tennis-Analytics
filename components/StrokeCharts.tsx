@@ -9,15 +9,16 @@ interface StrokeChartsProps {
   playerNameB: string;
 }
 
+// Colores únicos por tipo de golpe para consistencia visual
 const STROKE_COLORS: Record<string, string> = {
-  [StrokeType.SERVE]: '#FBBF24',
-  [StrokeType.FOREHAND]: '#10B981',
-  [StrokeType.BACKHAND]: '#3B82F6',
-  [StrokeType.INSIDE_OUT_FOREHAND]: '#F97316',
-  [StrokeType.INSIDE_OUT_BACKHAND]: '#8B5CF6',
-  [StrokeType.VOLLEY_FOREHAND]: '#14B8A6',
-  [StrokeType.VOLLEY_BACKHAND]: '#06B6D4',
-  [StrokeType.SMASH]: '#F43F5E',
+  [StrokeType.SERVE]: '#FBBF24', // Ámbar
+  [StrokeType.FOREHAND]: '#10B981', // Esmeralda
+  [StrokeType.BACKHAND]: '#3B82F6', // Azul
+  [StrokeType.INSIDE_OUT_FOREHAND]: '#F97316', // Naranja
+  [StrokeType.INSIDE_OUT_BACKHAND]: '#8B5CF6', // Violeta
+  [StrokeType.VOLLEY_FOREHAND]: '#14B8A6', // Teal
+  [StrokeType.VOLLEY_BACKHAND]: '#06B6D4', // Cian
+  [StrokeType.SMASH]: '#F43F5E', // Rosa
 };
 
 const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playerNameB }) => {
@@ -42,13 +43,14 @@ const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playe
   const dataA = getChartData('A');
   const dataB = getChartData('B');
 
+  // Renderizador de etiqueta interna (%)
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-    // Only show if the slice is large enough
+    // Solo mostrar si la porción es lo suficientemente grande (>5%)
     if (percent < 0.05) return null;
 
     return (
@@ -58,7 +60,7 @@ const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playe
         fill="white" 
         textAnchor="middle" 
         dominantBaseline="central"
-        className="text-[9px] font-black"
+        className="text-[10px] font-black"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
@@ -74,7 +76,7 @@ const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playe
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-[11px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2 truncate pr-2">
             <div className={`w-3 h-3 rounded-full shrink-0 ${indicatorColor} ring-4 ring-slate-100`} />
-            Distribución: {playerName}
+            Tipos de Golpe: {playerName}
           </h3>
           {data.length > 0 && (
              <span className="text-[9px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
@@ -82,7 +84,7 @@ const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playe
              </span>
           )}
         </div>
-        <div className="flex-1 min-h-[350px]">
+        <div className="flex-1 min-h-[380px]">
           {data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -91,20 +93,20 @@ const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playe
                   cx="50%"
                   cy="50%"
                   innerRadius={70}
-                  outerRadius={100}
-                  paddingAngle={5}
+                  outerRadius={105}
+                  paddingAngle={4}
                   dataKey="value"
                   labelLine={false}
                   label={renderCustomizedLabel}
                   animationBegin={0}
-                  animationDuration={800}
+                  animationDuration={600}
                 >
                   {data.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
                       fill={STROKE_COLORS[entry.name as StrokeType] || '#CBD5E1'} 
                       stroke="rgba(255,255,255,0.4)"
-                      strokeWidth={3}
+                      strokeWidth={2}
                       className="outline-none"
                     />
                   ))}
@@ -119,18 +121,18 @@ const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playe
                     padding: '12px'
                   }}
                   formatter={(value: any, name: any, props: any) => [
-                    `${value} veces (${props.payload.percentage}%)`,
-                    name.toUpperCase()
+                    `${value} golpes (${props.payload.percentage}%)`,
+                    name
                   ]}
                 />
                 <Legend 
                   verticalAlign="bottom" 
-                  height={80} 
+                  height={100} 
                   wrapperStyle={{ fontSize: '10px', paddingTop: '24px' }}
                   formatter={(value: any, entry: any) => {
                     const payload = entry.payload;
                     return (
-                      <span className="text-slate-500 font-bold uppercase tracking-tighter">
+                      <span className="text-slate-500 font-bold uppercase tracking-tight">
                         {value}: <span className="text-slate-900 font-black">{payload.percentage}%</span>
                       </span>
                     );
@@ -146,7 +148,7 @@ const StrokeCharts: React.FC<StrokeChartsProps> = ({ actions, playerNameA, playe
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                  </svg>
               </div>
-              <p className="font-bold uppercase tracking-widest text-[10px]">Esperando registros...</p>
+              <p className="font-bold uppercase tracking-widest text-[10px]">Esperando acciones de {playerName}...</p>
             </div>
           )}
         </div>
